@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 26-05-2016 a las 20:29:43
+-- Tiempo de generación: 26-05-2016 a las 21:19:39
 -- Versión del servidor: 10.1.10-MariaDB
 -- Versión de PHP: 5.6.19
 
@@ -19,6 +19,8 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `db_golden`
 --
+CREATE DATABASE IF NOT EXISTS `db_golden` DEFAULT CHARACTER SET utf8 COLLATE utf8_spanish_ci;
+USE `db_golden`;
 
 -- --------------------------------------------------------
 
