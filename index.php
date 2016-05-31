@@ -1,3 +1,34 @@
+<?php
+    
+    include "clases/Reserva.php";
+    include "clases/FechayHora.php";
+    $reserva = new Reserva();
+    $reservas = $reserva->seleccionarFiltro()->fetchAll();
+
+    $tipo_habitacion = new TipoHabitacion();
+    $TipoHabitacionList = $tipo_habitacion->seleccionarFiltro()->fetchAll();
+
+    if ($_POST){
+        
+        $reserva->Rela_Tipohabitacion=$_POST['tipo_habitacion'];
+        $reserva->reserva_cant_adultos=$_POST['cant_adultos'];
+        $reserva->reserva_cant_habitaciones=$_POST['cant_habitaciones'];
+        $reserva->reserva_cant_menores = $_POST['cant_menores'];
+        $reserva->reserva_email=$_POST['email'];
+        $reserva->reserva_mensaje=$_POST['mensaje'];
+        $reserva->reserva_entrada=$_POST['anio-entrada'].'-'.$_POST['mes-entrada'].'-'.$_POST['dia-entrada'];
+        $reserva->reserva_nombre=$_POST['nombre'];
+        $reserva->reserva_salida=$_POST['anio-salida'].'-'.$_POST['mes-salida'].'-'.$_POST['dia-salida'];;
+        $reserva->reserva_telefono=$_POST['telefono'];
+        try{
+            $resultado = $reserva->insertar();
+        } catch (PDOException $e){
+            echo 'Error al Insertar: ' . $e->getMessage();
+        }
+    }
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -640,39 +671,38 @@ OUR TRAINERS
 					</div></div>
                     <div class="col-sm-8 col-md-8">
                         <div class="contact-form">
-                            <form id="main-contact-form" name="contact-form" method="post" action="">
+                            <form id="main-contact-form" name="contact-form" method="post" action="index.php">
                                 <div class="form-group">
                                     <label>Nombre</label>
-                                    <input type="text" class="form-control"  placeholder="Nombre">
+                                    <input type="text" class="form-control" name="nombre"  placeholder="Nombre">
                                 </div>
                                 <div class="form-group">
                                     <label>Correo Electrónico</label>
-                                    <input type="email" class="form-control"  placeholder="Email">
+                                    <input type="email" class="form-control"  name="email" placeholder="Email">
                                 </div>
                                 <div class="form-group">
                                     <label>Teléfono</label>
-                                    <input type="telefono" class="form-control"  placeholder="Teléfono">
+                                    <input type="telefono" class="form-control" name="telefono" placeholder="Teléfono">
                                 </div>   
                                 <div class="form-group">
                                     <label>Tipo de Habitación</label>
                                     <select class="form-control" name="tipo_habitacion">
                                       <option selected="selected" disabled="">Tipo de Habitación</option>
-                                      <option>Individual</option>
-                                      <option>Doble</option>
-                                      <option>Familiar</option>
-                                      <option>Múltiple</option>
+                                      <?php foreach ($TipoHabitacionList as $tipohabitacion) :?>
+                                          <option value="<?php echo $tipohabitacion['id']; ?>"><?php echo $tipohabitacion['tipo_habitacion_descri']; ?></option>
+                                      <?php endforeach; ?>
                                     </select>
                                 </div>  
                                 <div class="row">
                                     <div class="col-xs-6">  
                                     <div class="form-group">
                                         <label>Cant. de Habitaciones</label>
-                                        <select class="form-control" name="cant_habitacion">
+                                        <select class="form-control" name="cant_habitaciones">
                                           <option selected="selected" disabled="">Habitaciones</option>
-                                          <option>1</option>
-                                          <option>2</option>
-                                          <option>3</option>
-                                          <option>4</option>
+                                          <option value="1">1</option>
+                                          <option value="2">2</option>
+                                          <option value="3">3</option>
+                                          <option value="4">4</option>
                                         </select>   
                                     </div>   
                                     </div>
@@ -682,23 +712,23 @@ OUR TRAINERS
                                     <div class="form-group">  
                                         <label>Cant. de Adultos</label>          
                                         <select class="form-control" name="cant_adultos">
-                                          <option selected="selectede" disabled>Adultos</option>
-                                          <option>1</option>
-                                          <option>2</option>
-                                          <option>3</option>
-                                          <option>4</option>
+                                          <option selected="selected" disabled>Adultos</option>
+                                          <option value="1">1</option>
+                                          <option value="2">2</option>
+                                          <option value="3">3</option>
+                                          <option value="4">4</option>
                                         </select>
                                     </div>
                                     </div>
                                     <div class="col-xs-6">
                                     <div class="form-group">
                                         <label>Cant. de Menores</label>
-                                        <select class="form-control" name="cant_adultos">
+                                        <select class="form-control" name="cant_menores">
                                           <option selected="selected" disabled="">Niños (menor a 4 años)</option>
-                                          <option>0</option>
-                                          <option>1</option>
-                                          <option>2</option>
-                                          <option>3</option>
+                                          <option value="0">0</option>
+                                          <option value="1">1</option>
+                                          <option value="2">2</option>
+                                          <option value="3">3</option>
                                         </select>
                                     </div> 
                                     </div>
@@ -742,14 +772,11 @@ OUR TRAINERS
                                     </div>
                                     <div class="col-xs-4">
                                       <select class="form-control" name="anio-entrada">
-                                        <option value="16">2016</option>
-                                        <option value="17">2017</option>
-                                        <option value="18">2018</option>
-                                        <option value="19">2019</option>
-                                        <option value="20">2020</option>
-                                        <option value="21">2021</option>
-                                        <option value="22">2022</option>
-                                        <option value="23">2023</option>
+                                        <option value="2016">2016</option>
+                                        <option value="2017">2017</option>
+                                        <option value="2018">2018</option>
+                                        <option value="2019">2019</option>
+                                        <option value="2020">2020</option>
                                       </select>
                                     </div>
                                   </div>
@@ -793,20 +820,15 @@ OUR TRAINERS
                                     </div>
                                     <div class="col-xs-4">
                                       <select class="form-control" name="anio-salida">
-                                        <option value="16">2016</option>
-                                        <option value="17">2017</option>
-                                        <option value="18">2018</option>
-                                        <option value="19">2019</option>
-                                        <option value="20">2020</option>
-                                        <option value="21">2021</option>
-                                        <option value="22">2022</option>
-                                        <option value="23">2023</option>
+                                        <option value="2016">2016</option>
+                                        <option value="2017">2017</option>
+                                        <option value="2018">2018</option>
                                       </select>
                                     </div>
                                   </div>
                                 </div>
                                 <div class="form-group">
-                                    <textarea class="form-control"  placeholder="Mensaje" rows="4"></textarea>
+                                    <textarea class="form-control" name="mensaje"  placeholder="Mensaje" rows="4"></textarea>
                                 </div>
                                 <button class="btn btn-primary" type="submit">Reservar!</button>
                             </form>
@@ -826,90 +848,51 @@ OUR TRAINERS
         </div>
   
             <div class="container">
-                    <div class="row">
-                    <div class="row">
-                <div class="col-lg-12">
-                    <div class="panel panel-default">
-                      <!-- Default panel contents -->
-                      <div class="panel-heading"><h3>Individual<h3></div>
-                      <!-- Table -->
-                      <table class="table table-striped">
-                        <thead>
-                          <tr>
-                            <th>Entrada</th>
-                            <th>Salida</th>
-                            <th>Nombre</th>
-                            <th>Email</th>
-                            <th>Teléfono</th>                                    
-                            <th>Cant. Habitaciones</th>  
-                            <th>Adultos</th>  
-                            <th>Niños menores</th>  
-                            <th>Mensaje</th>
-                          </tr>
-                        </thead>
-                        <tbody>   
-                          <tr>
-                            <td>13/12/2016</td>
-                            <td>14/12/2016</td>
-                            <td>Heber Hugo Caballero</td>
-                            <td><a href="mailto:hebercaballero@outlook.com">hebercaballero@outlook.com</a></td>
-                            <td>3704582965</td>
-                            <td>1</td>
-                            <td>1</td>
-                            <td>0</td>
-                            <td>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                            proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</td>
-                        </tbody>
-                      </table> 
+                <div class="row">
+                    <?php foreach($TipoHabitacionList as $tipohabitacion) : ?>
+                    <div class="col-lg-12">
+                        <div class="panel panel-default">
+                          <!-- Default panel contents -->
+                          <div class="panel-heading"><h3><?php echo $tipohabitacion['tipo_habitacion_descri'] ?><h3></div>
+                          <!-- Table -->
+                          <table class="table table-striped">
+                            <thead>
+                              <tr>
+                                <th>Entrada</th>
+                                <th>Salida</th>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>                                    
+                                <th>Cant. Habitaciones</th>  
+                                <th>Adultos</th>  
+                                <th>Niños menores</th>  
+                                <th>Mensaje</th>
+                              </tr>
+                            </thead>
+                            <tbody>   
+                          <?php 
+                                $reservas = $reserva->seleccionarFiltro("rela_tipohabitacion =".$tipohabitacion['id'],"reserva_entrada");
+                                foreach ($reservas as $reg_reserva) : ?>
+                          
+                              <tr>
+                                <td><?php echo FechayHora::FechaFormatoCorto($reg_reserva['reserva_entrada']); ?></td>
+                                <td><?php echo FechayHora::FechaFormatoCorto($reg_reserva['reserva_salida']); ?></td>
+                                <td><?php echo $reg_reserva['reserva_nombre']; ?></td>
+                                <td><a href="mailto:<?php echo $reg_reserva['reserva_email']; ?>"><?php echo $reg_reserva['reserva_email']; ?></a></td>
+                                <td><?php echo $reg_reserva['reserva_telefono']; ?></td>
+                                <td><?php echo $reg_reserva['reserva_cant_habitaciones']; ?></td>
+                                <td><?php echo $reg_reserva['reserva_cant_adultos']; ?></td>
+                                <td><?php echo $reg_reserva['reserva_cant_menores']; ?></td>
+                                <td><?php echo $reg_reserva['reserva_mensaje']; ?></td>                           
+                      <?php endforeach; ?>
+                            </tbody>
+                          </table> 
+                        </div>
                     </div>
-                </div>
-                <hr>
-                <div class="col-lg-12">
-                    <div class="panel panel-default">
-                      <!-- Default panel contents -->
-                      <div class="panel-heading"><h3>Doble<h3></div>
-                      <!-- Table -->
-                      <table class="table table-striped">
-                        <thead>
-                          <tr>
-                            <th>Entrada</th>
-                            <th>Salida</th>
-                            <th>Nombre</th>
-                            <th>Email</th>
-                            <th>Teléfono</th>                                    
-                            <th>Cant. Habitaciones</th>  
-                            <th>Adultos</th>  
-                            <th>Niños menores</th>  
-                            <th>Mensaje</th>
-                          </tr>
-                        </thead>
-                        <tbody>   
-                          <tr>
-                            <td>12/12/2016</td>
-                            <td>20/12/2016</td>
-                            <td>Juan José Quiroga</td>
-                            <td><a href="mailto:juanjosequiroga@outlook.com">juanjosequiroga@outlook.com</a></td>
-                            <td>3722152689</td>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>1</td>
-                            <td>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                            proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</td>
-                        </tbody>
-                      </table> 
-                    </div>
+                    <hr>
+                    <?php endforeach; ?>
                 </div>
             </div>
-
-                </div>
         </div>
     </section>
 
