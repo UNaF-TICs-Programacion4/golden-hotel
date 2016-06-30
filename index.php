@@ -1,34 +1,3 @@
-<?php
-    
-    include "clases/Reserva.php";
-    include "clases/FechayHora.php";
-    $reserva = new Reserva();
-    $reservas = $reserva->seleccionarFiltro()->fetchAll();
-
-    $tipo_habitacion = new TipoHabitacion();
-    $TipoHabitacionList = $tipo_habitacion->seleccionarFiltro()->fetchAll();
-
-    if ($_POST){
-        
-        $reserva->Rela_Tipohabitacion=$_POST['tipo_habitacion'];
-        $reserva->reserva_cant_adultos=$_POST['cant_adultos'];
-        $reserva->reserva_cant_habitaciones=$_POST['cant_habitaciones'];
-        $reserva->reserva_cant_menores = $_POST['cant_menores'];
-        $reserva->reserva_email=$_POST['email'];
-        $reserva->reserva_mensaje=$_POST['mensaje'];
-        $reserva->reserva_entrada=$_POST['anio-entrada'].'-'.$_POST['mes-entrada'].'-'.$_POST['dia-entrada'];
-        $reserva->reserva_nombre=$_POST['nombre'];
-        $reserva->reserva_salida=$_POST['anio-salida'].'-'.$_POST['mes-salida'].'-'.$_POST['dia-salida'];;
-        $reserva->reserva_telefono=$_POST['telefono'];
-        try{
-            $resultado = $reserva->insertar();
-        } catch (PDOException $e){
-            echo 'Error al Insertar: ' . $e->getMessage();
-        }
-    }
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -671,7 +640,7 @@ OUR TRAINERS
 					</div></div>
                     <div class="col-sm-8 col-md-8">
                         <div class="contact-form">
-                            <form id="main-contact-form" name="contact-form" method="post" action="index.php">
+                            <form id="main-contact-form" name="contact-form" method="post" action="">
                                 <div class="form-group">
                                     <label>Nombre</label>
                                     <input type="text" class="form-control" name="nombre"  placeholder="Nombre">
@@ -688,9 +657,10 @@ OUR TRAINERS
                                     <label>Tipo de Habitación</label>
                                     <select class="form-control" name="tipo_habitacion">
                                       <option selected="selected" disabled="">Tipo de Habitación</option>
-                                      <?php foreach ($TipoHabitacionList as $tipohabitacion) :?>
-                                          <option value="<?php echo $tipohabitacion['id']; ?>"><?php echo $tipohabitacion['tipo_habitacion_descri']; ?></option>
-                                      <?php endforeach; ?>
+                                      <option value="1">Individual</option>
+                                      <option value="2">Doble</option>
+                                      <option value="3">Familiar</option>
+                                      <option value="4">Múltiple</option>
                                     </select>
                                 </div>  
                                 <div class="row">
@@ -848,12 +818,11 @@ OUR TRAINERS
         </div>
   
             <div class="container">
-                <div class="row">
-                    <?php foreach($TipoHabitacionList as $tipohabitacion) : ?>
+                <div class="row">                    
                     <div class="col-lg-12">
                         <div class="panel panel-default">
                           <!-- Default panel contents -->
-                          <div class="panel-heading"><h3><?php echo $tipohabitacion['tipo_habitacion_descri'] ?><h3></div>
+                          <div class="panel-heading"><h3>Individual<h3></div>
                           <!-- Table -->
                           <table class="table table-striped">
                             <thead>
@@ -869,33 +838,26 @@ OUR TRAINERS
                                 <th>Mensaje</th>
                               </tr>
                             </thead>
-                            <tbody>   
-                          <?php 
-                                $reservas = $reserva->seleccionarFiltro("rela_tipohabitacion =".$tipohabitacion['id'],"reserva_entrada");
-                                foreach ($reservas as $reg_reserva) : ?>
-                          
+                            <tbody>                       
                               <tr>
-                                <td><?php echo FechayHora::FechaFormatoCorto($reg_reserva['reserva_entrada']); ?></td>
-                                <td><?php echo FechayHora::FechaFormatoCorto($reg_reserva['reserva_salida']); ?></td>
-                                <td><?php echo $reg_reserva['reserva_nombre']; ?></td>
-                                <td><a href="mailto:<?php echo $reg_reserva['reserva_email']; ?>"><?php echo $reg_reserva['reserva_email']; ?></a></td>
-                                <td><?php echo $reg_reserva['reserva_telefono']; ?></td>
-                                <td><?php echo $reg_reserva['reserva_cant_habitaciones']; ?></td>
-                                <td><?php echo $reg_reserva['reserva_cant_adultos']; ?></td>
-                                <td><?php echo $reg_reserva['reserva_cant_menores']; ?></td>
-                                <td><?php echo $reg_reserva['reserva_mensaje']; ?></td>                           
-                      <?php endforeach; ?>
+                                <td>13/06/2016</td>
+                                <td>14/06/2016</td>
+                                <td>Fulano de Tal</td>
+                                <td><a href="mailto:fulanodetal@gmail.com">fulanodetal@gmail.com</a></td>
+                                <td>3704568978</td>
+                                <td>2</td>
+                                <td>4</td>
+                                <td>2</td>
+                                <td>Este es el mensaje del Cliente Fulano de Tal</td>
                             </tbody>
                           </table> 
                         </div>
                     </div>
-                    <hr>
-                    <?php endforeach; ?>
+                    <hr>                    
                 </div>
             </div>
         </div>
     </section>
-
 
     <footer id="footer">
         <div class="container">
